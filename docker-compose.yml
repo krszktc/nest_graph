@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    restart: always    
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=cover_password
+      - POSTGRES_USER=cover_user
+      - POSTGRES_DB=cover_db
+
+  api:
+    image: cover_api:dev
+    container_name: cover_api
+    restart: always
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+    volumes:
+      - "api:/app"
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+volumes:
+  postgres:
+    name: db_data
+  api:
+    name: api_data
